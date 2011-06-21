@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# -*- coding: undecided -*-
 require 'rubygems'
 require 'ArgsParser'
 
