@@ -7,12 +7,12 @@ require 'ArgsParser'
 
 parser = ArgsParser.parser
 parser.bind(:input, :i, 'input video file')
-parser.bind(:output, :o, 'output gif file : default - out.gif')
-parser.bind(:size, :s, 'size : default - 400x300')
-parser.comment(:tmp_dir, 'tmp dir : default - /var/tmp/video2gif')
-parser.bind(:video_fps, :vfps, 'video fps : default - 30')
-parser.bind(:gif_fps, :gfps, 'gif fps : default - 10')
-parser.comment(:max_frames, 'max frames : default - -1 (no limit)')
+parser.bind(:output, :o, 'output gif file', 'out.gif')
+parser.bind(:size, :s, 'size', '400x300')
+parser.comment(:tmp_dir, 'tmp dir', '/var/tmp/video2gif')
+parser.bind(:video_fps, :vfps, 'video fps', 30)
+parser.bind(:gif_fps, :gfps, 'gif fps', 10)
+parser.comment(:max_frames, 'max frames', -1)
 parser.bind(:help, :h, 'show help')
 first, params = parser.parse(ARGV)
 
