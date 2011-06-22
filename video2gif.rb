@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-## brew install ffmpeg imagemagick
+## install ffmpeg imagemagick
 ## gem install ArgsParser
 
 require 'rubygems'
@@ -11,7 +11,7 @@ parser.bind(:output, :o, 'output gif file', 'out.gif')
 parser.bind(:size, :s, 'size', '400x300')
 parser.comment(:tmp_dir, 'tmp dir', '/var/tmp/video2gif')
 parser.bind(:video_fps, :vfps, 'video fps', 30)
-parser.bind(:gif_fps, :gfps, 'gif fps', 10)
+parser.bind(:gif_fps, :gfps, 'gif fps', 30)
 parser.comment(:max_frames, 'max frames', -1)
 parser.bind(:help, :h, 'show help')
 first, params = parser.parse(ARGV)
