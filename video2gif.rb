@@ -21,17 +21,6 @@ if !parser.has_param(:input) or parser.has_option(:help)
   exit
 end
 
-{
-  :output => 'out.gif',
-  :size => '400x300',
-  :video_fps => 2,
-  :gif_fps => 6,
-  :max_frames => -1,
-  :tmp_dir => '/var/tmp/video2gif'
-}.each{|k,v|
-  params[k] = v unless params[k]
-}
-
 Dir.mkdir params[:tmp_dir] unless File.exists? params[:tmp_dir]
 Dir.glob(params[:tmp_dir]+'/*').each{|f|
   File.delete f
