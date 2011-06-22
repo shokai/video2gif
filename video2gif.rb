@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+## brew install ffmpeg imagemagick
+## gem install ArgsParser
+
 require 'rubygems'
 require 'ArgsParser'
 
