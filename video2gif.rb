@@ -1,9 +1,7 @@
 #!/usr/bin/env ruby
-## install ffmpeg imagemagick
-## gem install ArgsParser
-
 require 'rubygems'
 require 'ArgsParser'
+require 'fileutils'
 
 parser = ArgsParser.parser
 parser.bind(:input, :i, 'input video file')
@@ -18,22 +16,21 @@ first, params = parser.parse(ARGV)
 
 if !parser.has_param(:input) or parser.has_option(:help)
   puts parser.help
+  puts 'e.g.   ruby video2gif.rb -i input.mov -o output.gif -vfps 2 -gfps 6 -s 200x150'
   exit
 end
 
-Dir.mkdir params[:tmp_dir] unless File.exists? params[:tmp_dir]
-Dir.glob(params[:tmp_dir]+'/*').each{|f|
-  File.delete f
-}
+tmpdir = params[:tmp_dir].gsub(/\/$/,'')+"/#{Time.now.to_i}_#{Time.now.usec}"
+FileUtils.mkdir_p tmpdir unless File.exists? tmpdir
 
-puts cmd = "ffmpeg -i #{params[:input]} -r #{params[:video_fps]} -s #{params[:size]} -sameq #{params[:tmp_dir]}/%d.gif"
+puts cmd = "ffmpeg -i #{params[:input]} -r #{params[:video_fps]} -s #{params[:size]} -sameq #{tmpdir}/%d.gif"
 puts `#{cmd}`
 
-max_len = Dir.glob(params[:tmp_dir]+'/*').map{|i|
+max_len = Dir.glob("#{tmpdir}/*").map{|i|
   i.split('/').last.to_i
 }.max.to_s.size
 
-Dir.glob(params[:tmp_dir]+'/*').each{|img|
+Dir.glob("#{tmpdir}/*").each{|img|
   dst = File.dirname(img)+'/'+img.split('/').last.to_i.to_s.rjust(max_len,'0')+'.'+img.scan(/\.(.+)$/).first.first
   begin
     File.rename(img, dst)
@@ -43,9 +40,8 @@ Dir.glob(params[:tmp_dir]+'/*').each{|img|
   end
 }
 
-
 if params[:max_frames].to_i > 0
-  files = Dir.glob(params[:tmp_dir]+'/*').sort{|a,b|
+  files = Dir.glob("#{tmpdir}/*").sort{|a,b|
     a.split('/').last.to_i <=> b.split('/').last.to_i
   }
   while files.size > params[:max_frames].to_i
@@ -53,5 +49,7 @@ if params[:max_frames].to_i > 0
   end
 end
 
-puts cmd = "convert -colors 32 -resize #{params[:size]} -loop 0 -delay #{100/params[:gif_fps].to_i} #{params[:tmp_dir]}/*.gif #{params[:output]}"
+puts cmd = "convert -colors 32 -resize #{params[:size]} -loop 0 -delay #{100/params[:gif_fps].to_i} #{tmpdir}/*.gif #{params[:output]}"
 puts `#{cmd}`
+
+FileUtils.rm_r(tmpdir)
