@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'args_parser'
 require 'fileutils'
+require 'tmpdir'
 
 parser = ArgsParser.parse ARGV do
   arg :input, 'input video file', :alias => :i
@@ -20,36 +21,34 @@ if parser.has_option? :help or !parser.has_param? :input
   exit
 end
 
-tmpdir = parser[:tmp_dir].gsub(/\/$/,'')+"/#{Time.now.to_i}_#{Time.now.usec}"
-FileUtils.mkdir_p tmpdir unless File.exists? tmpdir
+Dir.mktmpdir do |dir|
 
-puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} -s #{parser[:size]} -sameq #{tmpdir}/%d.gif"
-puts `#{cmd}`
+  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} -s #{parser[:size]} -sameq #{dir}/%d.gif"
+  puts `#{cmd}`
 
-max_len = Dir.glob("#{tmpdir}/*").map{|i|
-  i.split('/').last.to_i
-}.max.to_s.size
+  max_len = Dir.glob("#{dir}/*").map{|i|
+    i.split('/').last.to_i
+  }.max.to_s.size
 
-Dir.glob("#{tmpdir}/*").each{|img|
-  dst = File.dirname(img)+'/'+img.split('/').last.to_i.to_s.rjust(max_len,'0')+'.'+img.scan(/\.(.+)$/).first.first
-  begin
-    File.rename(img, dst)
-  rescue => e
-    STDERR.puts e
-    exit 1
-  end
-}
-
-if parser[:max_frames].to_i > 0
-  files = Dir.glob("#{tmpdir}/*").sort{|a,b|
-    a.split('/').last.to_i <=> b.split('/').last.to_i
+  Dir.glob("#{dir}/*").each{|img|
+    dst = File.dirname(img)+'/'+img.split('/').last.to_i.to_s.rjust(max_len,'0')+'.'+img.scan(/\.(.+)$/).first.first
+    begin
+      File.rename(img, dst)
+    rescue => e
+      STDERR.puts e
+      exit 1
+    end
   }
-  while files.size > parser[:max_frames].to_i
-    File.delete files.shift
+
+  if parser[:max_frames].to_i > 0
+    files = Dir.glob("#{dir}/*").sort{|a,b|
+      a.split('/').last.to_i <=> b.split('/').last.to_i
+    }
+    while files.size > parser[:max_frames].to_i
+      File.delete files.shift
+    end
   end
+
+  puts cmd = "convert -colors 32 -resize #{parser[:size]} -loop 0 -delay #{100/parser[:gif_fps].to_i} #{dir}/*.gif #{parser[:output]}"
+  puts `#{cmd}`
 end
-
-puts cmd = "convert -colors 32 -resize #{parser[:size]} -loop 0 -delay #{100/parser[:gif_fps].to_i} #{tmpdir}/*.gif #{parser[:output]}"
-puts `#{cmd}`
-
-FileUtils.rm_r(tmpdir)
