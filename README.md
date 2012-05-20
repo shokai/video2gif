@@ -5,7 +5,7 @@ Install Dependencies
 --------------------
 
     % brew install ffmpeg imagemagick
-    % gem install ArgsParser
+    % gem install args_parser
 
 Run
 ---
