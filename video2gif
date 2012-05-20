@@ -8,7 +8,6 @@ parser = ArgsParser.parse ARGV do
   arg :input, 'input video file', :alias => :i
   arg :output, 'output gif file', :alias => :o, :default => 'out.gif'
   arg :size, 'size', :alias => :s, :default => '400x300'
-  arg :tmp_dir, 'tmp dir', :default => '/var/tmp/video2gif'
   arg :video_fps, 'video fps', :alias => :vfps, :default => 30
   arg :gif_fps, 'gif fps', :alias => :gfps, :default => 30
   arg :max_frames, 'max frames', :default => -1
