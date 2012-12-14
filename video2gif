@@ -22,7 +22,7 @@ end
 
 Dir.mktmpdir do |dir|
 
-  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} -s #{parser[:size]} -sameq #{dir}/%d.gif"
+  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} -sameq #{dir}/%d.gif"
   puts `#{cmd}`
 
   max_len = Dir.glob("#{dir}/*").map{|i|
@@ -48,6 +48,6 @@ Dir.mktmpdir do |dir|
     end
   end
 
-  puts cmd = "convert -colors 32 -resize #{parser[:size]} -loop 0 -delay #{100/parser[:gif_fps].to_i} #{dir}/*.gif #{parser[:output]}"
+  puts cmd = "convert -colors 32 -loop 0 -delay #{100/parser[:gif_fps].to_i} -geometry #{parser[:size]} #{dir}/*.gif #{parser[:output]}"
   puts `#{cmd}`
 end
