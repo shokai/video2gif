@@ -22,7 +22,7 @@ end
 
 Dir.mktmpdir do |dir|
 
-  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} -sameq #{dir}/%d.gif"
+  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} #{dir}/%d.gif"
   puts `#{cmd}`
 
   max_len = Dir.glob("#{dir}/*").map{|i|
