@@ -12,6 +12,7 @@ parser = ArgsParser.parse ARGV do
   arg :gif_fps, 'gif fps', :alias => :gfps, :default => 30
   arg :max_frames, 'max frames', :default => -1
   arg :help, 'show help', :alias => :h
+  arg :video_start, 'video start time offset (sec)', :alias => :vs, :default => 0
 end
 
 if parser.has_option? :help or !parser.has_param? :input
@@ -21,8 +22,7 @@ if parser.has_option? :help or !parser.has_param? :input
 end
 
 Dir.mktmpdir do |dir|
-
-  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} #{dir}/%d.gif"
+  puts cmd = "ffmpeg -i #{parser[:input]} -r #{parser[:video_fps]} -ss #{parser[:video_start]} #{dir}/%d.gif"
   puts `#{cmd}`
 
   max_len = Dir.glob("#{dir}/*").map{|i|
